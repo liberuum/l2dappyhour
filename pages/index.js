@@ -30,12 +30,14 @@ export default function Home() {
       return
     }
     (async () => {
-      // Committed state is not final yet
-      const committedETHBalance = await apis.syncWallet.getBalance("ETH");
-      // Verified state is final
-      const verifiedETHBalance = await apis.syncWallet.getBalance("ETH", "verified");
+      const state = await apis.syncWallet.getAccountState();
 
-      setData({committedETHBalance, verifiedETHBalance})
+      // Committed state is not final yet
+      const committedBalances = state.committed.balances;
+      // Verified state is final
+      const verifiedBalances = state.verified.balances;
+
+      setData({committedBalances, verifiedBalances})
     })()
   }, [apis])
 
@@ -51,7 +53,15 @@ export default function Home() {
         <div>{apis.syncWallet.address()}</div>
         <h3>Balances in Layer 2</h3>
         {data && <div>
-          ETH: {data.verifiedETHBalance.toString()}
+          {Object.entries(data.verifiedBalances).map(([token, balance]) => <div>
+            // ETH and DAI happen to have the same amount of decimals,
+            // so this should be modified to support other tokens that may not have the same amount.
+            {token}: {ethers.utils.formatEther(balance).toString()}
+          </div>)}
+          <h4>Not verified yet</h4>
+          {Object.entries(data.committedBalances).map(([token, balance]) => <div>
+            {token}: {ethers.utils.formatEther(balance).toString()}
+          </div>)}
         </div>}
 
       </main> : 'Loading...'}
