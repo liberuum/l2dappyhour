@@ -39,7 +39,9 @@ const SendForm = ({apis}) => {
       <Input value={amount} onChange={event => {setAmount(event.target.value)}} />
     </Box>
     <Box>
-      <Button onClick={() => send()} disabled={!apis}>Send</Button>
+      <Button
+        style={{margin: '25px 0 0 0'}}
+        onClick={() => send()} disabled={!apis}>Send</Button>
     </Box>
   </Box>
 }
